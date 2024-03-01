@@ -1,34 +1,50 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { FormEvent,useEffect, useState } from 'react'
+import './App.scss';
+import {marked} from 'marked'
+import { consumeAPI } from './utils/api';
 
 function App() {
-  const [count, setCount] = useState(0)
+  let abortController = new AbortController();
+
+  const [text, setText] = useState("")
+
+  const getMarkdown = (content:string) => {
+    if (content) {
+      let markdown = marked(content)
+      return { __html: markdown }
+    }
+  }
+
+  const submit = async(event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const input = event.currentTarget[0] as HTMLTextAreaElement
+    if(!input.value)
+    return
+
+    const prompt = input.value
+    
+    const response = await consumeAPI(prompt,abortController.signal)
+		await response?.pipeTo(new WritableStream({
+			write(data){
+				setText(prev=>prev+data)
+			}
+		}),{
+			signal: abortController.signal
+		})    
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <main>
+      <section>
+        <article contentEditable dangerouslySetInnerHTML={getMarkdown(text)}/>
+      </section>
+      <footer>
+        <form onSubmit={submit}>
+          <textarea name="prompt" placeholder="Ask a follow-up..."></textarea>
+          <button type="submit">&uarr;</button>
+        </form>
+      </footer>
+    </main>
   )
 }
 

@@ -1,9 +1,19 @@
 version: "3"
+
 services:
+  app:
+    container_name: ollama_front
+    build: 
+      dockerfile: ./docker/app/Dockerfile
+    ports:
+      - 80:80
+    depends_on:
+      - ollama
+  
   ollama:
     container_name: ollama
     image: ollama/ollama
-    command: ollama ollama run llama2
+    command: ["serve"]
     ports:
       - 11434:11434
     volumes:

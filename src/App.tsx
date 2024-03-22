@@ -1,4 +1,4 @@
-import { FormEvent,useEffect, useState } from 'react'
+import { FormEvent, useState } from 'react'
 import './App.scss';
 import {marked} from 'marked'
 import { consumeAPI } from './utils/api';

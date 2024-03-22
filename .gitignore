@@ -7,6 +7,8 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+ollama
+
 node_modules
 dist
 dist-ssr

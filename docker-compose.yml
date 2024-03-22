@@ -1,0 +1,11 @@
+version: "3"
+services:
+  ollama:
+    container_name: ollama
+    image: ollama/ollama
+    command: ollama ollama run llama2
+    ports:
+      - 11434:11434
+    volumes:
+      - ./ollama:/root/.ollama
+
